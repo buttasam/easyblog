@@ -1,4 +1,9 @@
 app/config/config.local.neon
 /temp/*
+!/temp/cache
+/temp/cache/*
 /log/*
 .idea/
+vendor/*
+!vendor/.htaccess
+/app/config/config.db.neon
