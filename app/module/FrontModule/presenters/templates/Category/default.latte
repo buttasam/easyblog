@@ -1,0 +1,17 @@
+{block content}
+
+    {snippet categories}
+    {foreach $categories as $category}
+        <a n:href="Category:detail $category->getId()">{$category->getTitle()}</a>
+        <a n:href="Category:default $category->getId()">edit</a>
+        <a n:href="deleteCategory! $category->getId()" class="ajax">delete</a>
+        <br>
+    {/foreach}
+    {/snippet}
+    {if $user->isInRole('admin')}
+        <div>
+            {control categoryForm}
+        </div>
+    {/if}
+
+{/block}

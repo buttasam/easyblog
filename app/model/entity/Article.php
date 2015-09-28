@@ -110,5 +110,4 @@ class Article extends BaseEntity
 		$selection = $this->record->related('comment', 'article_id');
 		return new EntityCollection($selection, Comment::class);
 	}
-
 }

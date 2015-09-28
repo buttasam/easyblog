@@ -1,38 +1,57 @@
 {block content}
+    <div id="content">
+        <h2>{$article->getTitle()}</h2>
 
-<div id="content">
-    <h2>{$article->getTitle()}</h2>
+        <p>
+            {$article->getContent()}
+        </p>
+        <span>{$article->getCreatedAt() |date:'%d.%m.%Y'}</span>
 
-    <p>
-        {$article->getContent()}
-    </p>
-    <span>{$article->getCreatedAt() |date:'%d.%m.%Y'}</span>
+        {snippet categoriesEdit}
+            <p>
+                {if $user->isInRole('admin')}
+                    Aktivní kategorie (kliknutím odstaníte):
+                    <br>
+                    {foreach $articleCategories as $category}
+                        <a n:href="deleteCategoryFromArticle! $article->getId(), $category->getId()"
+                           class="ajax">{$category->getTitle()}</a>{sep}, {/sep}
+                    {/foreach}
+                    <br>
+                    Neaktivní kategorie (kliknutím přidáte):
+                    <br>
+                    {foreach $articleNotCategories as $notCategory}
+                        <del><a n:href="addCategoryToArticle! $article->getId(), $notCategory->getId()"
+                                class="ajax">{$notCategory->getTitle()}</a></del>{sep}, {/sep}
+                    {/foreach}
+                    <br>
+                {else}
+                    Kategorie:
+                    {foreach $articleCategories as $category}
+                        {$category->getTitle()}{sep}, {/sep}
+                    {/foreach}
+                {/if}
+            </p>
+        {/snippet}
 
-    <p>
-        Kategorie:
-        {foreach $articleCategories as $category}
-            {$category->getTitle()}{sep}, {/sep}
-        {/foreach}
-    </p>
-
-    <h3>Komentáře:</h3>
-    <hr>
-    {snippet comments}
-    {foreach $articleComments as $articleComment}
-        <div>
-            Autor: {$articleComment->getUser()->getUsername()}
-            {if $user->isInRole('admin')}
-                <a n:href="deleteComment! $articleComment->getId()" class="ajax"> | Smazat</a>
-            {/if}
-            </br>
-            {$articleComment->getMessage()}
-        </div>
+        <h3>Komentáře:</h3>
         <hr>
-    {/foreach}
-    {/snippet}
+        {snippet comments}
+        {foreach $articleComments as $articleComment}
+            <div>
+                Autor: {$articleComment->getUser()->getUsername()}
+                {if $user->isInRole('admin')}
+                    <a n:href="deleteComment! $articleComment->getId()" class="ajax"> | Smazat</a>
+                {/if}
+                </br>
+                {$articleComment->getMessage()}
+            </div>
+            <hr>
+        {/foreach}
+        {/snippet}
 
-    <div n:if="$user->isLoggedIn()">
-        {control commentForm}
+        <div n:if="$user->isLoggedIn()">
+            {control commentForm}
+        </div>
+
     </div>
-
-</div>
+{/block}

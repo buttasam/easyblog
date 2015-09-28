@@ -10,7 +10,9 @@
 namespace App\Model\Entity;
 
 use App\Model\Entities\BaseEntity;
+use Nette\PhpGenerator\ClassType;
 use YetORM\Entity;
+use YetORM\EntityCollection;
 
 
 class Category extends BaseEntity
@@ -74,6 +76,16 @@ class Category extends BaseEntity
 	{
 		$this->record->created_at = $date;
 		return $this;
+	}
+
+
+	/**
+	 * @return EntityCollection
+	 */
+	public function getAllArticles()
+	{
+		$selection = $this->record->related('article_in_category');
+		return new EntityCollection($selection, Article::class, 'article');
 	}
 
 }

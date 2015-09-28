@@ -25,3 +25,4 @@ services:
 	- App\Model\Repository\UserRepository
 	- App\Model\Repository\ArticleRepository
 	- App\Model\Repository\CommentRepository
+	- App\Model\Repository\CategoryRepository

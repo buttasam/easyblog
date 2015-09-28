@@ -75,7 +75,7 @@ class SignPresenter extends BasePresenter
 		$form->addText('name', 'Celé jméno:')
 				->setRequired();
 
-		$form->addCheckbox('terms');
+		$form->addCheckbox('remember', 'Trvalé přihlášení');
 		$form->addSubmit('btnRegister', 'Registrovat');
 
 		$form->onSuccess[] = $this->registerFormSucceeded;

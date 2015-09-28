@@ -3,6 +3,7 @@
 namespace App\FrontModule\Presenters;
 
 use App\Model\Repository\ArticleRepository;
+use App\Model\Repository\CategoryRepository;
 use App\Model\Repository\CommentRepository;
 use App\Model\Repository\UserRepository;
 use Nette;
@@ -16,10 +17,13 @@ class ArticlePresenter extends BasePresenter
 	private $articles;
 
 	/** @var  CommentRepository */
-	private  $comments;
+	private $comments;
 
 	/** @var UserRepository */
-	private  $users;
+	private $users;
+
+	/** @var CategoryRepository */
+	private $categories;
 
 
 	/** @var \App\Model\Entity\Article */
@@ -27,15 +31,16 @@ class ArticlePresenter extends BasePresenter
 
 	/** @var \App\Model\Entity\Comment */
 	private $comment = NULL;
-	
 
-	public function __construct(ArticleRepository $articles, CommentRepository $comments, UserRepository $users)
+
+	public function __construct(ArticleRepository $articles, CommentRepository $comments, UserRepository $users, CategoryRepository $categories)
 	{
 		parent::__construct();
 
 		$this->articles = $articles;
 		$this->comments = $comments;
 		$this->users = $users;
+		$this->categories = $categories;
 	}
 
 
@@ -67,11 +72,13 @@ class ArticlePresenter extends BasePresenter
 	public function renderDetail($articleId)
 	{
 		$articleCategories = $this->article->getAllCategories();
+		$articleNotCategories = $this->articles->getNotCategories($this->article, $this->categories->findAll());
 		$articleComments = $this->article->getAllComments();
 
 		$this->template->article = $this->article;
 		$this->template->articleCategories = $articleCategories;
 		$this->template->articleComments = $articleComments;
+		$this->template->articleNotCategories = $articleNotCategories;
 	}
 
 
@@ -105,13 +112,6 @@ class ArticlePresenter extends BasePresenter
 		$this->redirect('default');
 	}
 
-	public function handleDeleteArticle($id)
-	{
-		$this->article = $this->articles->getByID($id);
-
-		$this->articles->delete($this->article);
-		$this->redrawControl('articles');
-	}
 
 	protected function createComponentCommentForm()
 	{
@@ -123,10 +123,12 @@ class ArticlePresenter extends BasePresenter
 		return $form;
 	}
 
+
 	public function processCommentForm(Form $form, $values)
 	{
 		$this->comment = $this->comments->createEntity();
-		$user = $this->users->getByID($this->getUser()->getId());
+		$user = $this->users->getByID($this->getUser()
+										   ->getId());
 
 		$this->comment->setMessage($values->message);
 		$this->comment->setArticle($this->article);
@@ -136,10 +138,36 @@ class ArticlePresenter extends BasePresenter
 		$this->redirect('this');
 	}
 
-	public function handleDeleteComment($commentId) {
+
+	public function handleDeleteArticle($id)
+	{
+		$this->article = $this->articles->getByID($id);
+
+		$this->articles->delete($this->article);
+		$this->redrawControl('articles');
+	}
+
+
+	public function handleDeleteComment($commentId)
+	{
 		$this->comment = $this->comments->getByID($commentId);
 		$this->comments->delete($this->comment);
 
 		$this->redrawControl('comments');
 	}
+
+
+	public function handleAddCategoryToArticle($articleId, $categoryId)
+	{
+		$this->articles->addArticleToCategory($articleId, $categoryId);
+		$this->redrawControl('categoriesEdit');
+	}
+
+
+	public function handleDeleteCategoryFromArticle($articleId, $categoryId)
+	{
+		$this->articles->deleteArticleFromCategory($articleId, $categoryId);
+		$this->redrawControl('categoriesEdit');
+	}
+
 }

@@ -32,5 +32,4 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 			$this->redirect('default');
 		}
 	}
-
 }
